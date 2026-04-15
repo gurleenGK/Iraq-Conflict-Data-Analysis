@@ -140,6 +140,66 @@ print("\n[Step 9] Keeping top 5 groups...")
 top5 = df['group_name'].value_counts().head(5).index
 df = df[df['group_name'].isin(top5)]
 
+print("         Groups retained:")
+for grp, cnt in df['group_name'].value_counts().items():
+    print(f"           {grp}: {cnt:,}")
+
+# =============================================================================
+# STEP 10: Remove duplicates
+# =============================================================================
+print("\n[Step 10] Removing duplicates...")
+
+before = len(df)
+df = df.drop_duplicates(
+    subset=['date', 'city', 'group_name', 'attack_type']
+)
+print(f"         Removed: {before - len(df)} duplicates")
+
+
+
+# =============================================================================
+# STEP 11: Final column order
+# =============================================================================
+print("\n[Step 12] Finalizing dataset...")
+
+df = df[[
+    'date', 'year', 'month', 'month_name', 'day', 'day_of_week',
+    'country', 'region', 'state', 'city',
+    'latitude', 'longitude',
+    'group_name', 'attack_type', 'target_type', 'weapon_type',
+    'killed', 'wounded', 'casualties', 'log_casualties',
+    'success', 'suicide',
+    'summary'
+]]
+
+df = df.reset_index(drop=True)
+
+# =============================================================================
+# STEP 12: Save dataset
+# =============================================================================
+df.to_csv(OUTPUT_PATH, index=False)
+
+# =============================================================================
+# FINAL SUMMARY
+# =============================================================================
+print("\n" + "=" * 60)
+print("  PREPROCESSING COMPLETE")
+print("=" * 60)
+
+print(f"  Output file      : {OUTPUT_PATH}")
+print(f"  Final shape      : {df.shape[0]:,} rows × {df.shape[1]} columns")
+print(f"  Years covered    : {sorted(df['year'].unique())}")
+print(f"  Date range       : {df['date'].min().date()} → {df['date'].max().date()}")
+
+print("\n  Casualty Summary:")
+print(f"    Total killed   : {int(df['killed'].sum()):,}")
+print(f"    Total wounded  : {int(df['wounded'].sum()):,}")
+print(f"    Avg casualties : {df['casualties'].mean():.2f}")
+print(f"    Max casualties : {int(df['casualties'].max()):,}")
+
+print(f"\n  Missing values   : {df.isnull().sum().sum()}")
+print("=" * 60)
+
 
 
 
