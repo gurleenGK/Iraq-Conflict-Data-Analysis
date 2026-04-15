@@ -180,7 +180,7 @@ df = df.reset_index(drop=True)
 df.to_csv(OUTPUT_PATH, index=False)
 
 # =============================================================================
-# FINAL SUMMARY
+# FINAL SUMMARY 
 # =============================================================================
 print("\n" + "=" * 60)
 print("  PREPROCESSING COMPLETE")
