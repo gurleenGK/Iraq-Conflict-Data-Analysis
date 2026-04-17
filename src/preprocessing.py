@@ -102,6 +102,7 @@ df['weapon_type'] = df['weapon_type'].fillna('Unknown')
 df['attack_type'] = df['attack_type'].fillna('Unknown')
 df['target_type'] = df['target_type'].fillna('Unknown')
 df['summary']     = df['summary'].fillna('No summary available')
+df['group_name']  = df['group_name'].fillna('Unknown')
 
 # =============================================================================
 # STEP 6: Feature engineering
@@ -118,6 +119,13 @@ df['date'] = pd.to_datetime(
     dict(year=df['year'], month=m, day=d),
     errors='coerce'
 )
+
+# Derived time features
+df['month_name'] = df['date'].dt.month_name()
+df['day_of_week'] = df['date'].dt.day_name()
+
+# Log transform (numerically stable)
+df['log_casualties'] = np.log1p(df['casualties'])
 
 
 # =============================================================================
@@ -160,7 +168,7 @@ print(f"         Removed: {before - len(df)} duplicates")
 # =============================================================================
 # STEP 11: Final column order
 # =============================================================================
-print("\n[Step 12] Finalizing dataset...")
+print("\n[Step 11] Finalizing dataset...")
 
 df = df[[
     'date', 'year', 'month', 'month_name', 'day', 'day_of_week',
@@ -172,7 +180,7 @@ df = df[[
     'summary'
 ]]
 
-df = df.reset_index(drop=True)
+df = df[final_cols].reset_index(drop=True)
 
 # =============================================================================
 # STEP 12: Save dataset
