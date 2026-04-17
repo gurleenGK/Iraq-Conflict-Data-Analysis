@@ -1,5 +1,5 @@
 # =============================================================================
-# IRAQ CONFLICT ANALYSIS — PREPROCESSING (WITH INSPECTION)
+# IRAQ CONFLICT ANALYSIS — PREPROCESSING (FINAL CLEAN VERSION)
 # =============================================================================
 
 import pandas as pd
@@ -109,9 +109,10 @@ df['group_name']  = df['group_name'].fillna('Unknown')
 # =============================================================================
 print("\n[Step 6] Creating features...")
 
+# Casualties
 df['casualties'] = df['killed'] + df['wounded']
 
-# Fix date
+# Fix date components
 m = df['month'].replace(0, 1).fillna(1).astype(int)
 d = df['day'].replace(0, 1).fillna(1).astype(int)
 
@@ -126,7 +127,6 @@ df['day_of_week'] = df['date'].dt.day_name()
 
 # Log transform (numerically stable)
 df['log_casualties'] = np.log1p(df['casualties'])
-
 
 # =============================================================================
 # STEP 7: Remove zero-casualty rows
@@ -163,14 +163,12 @@ df = df.drop_duplicates(
 )
 print(f"         Removed: {before - len(df)} duplicates")
 
-
-
 # =============================================================================
 # STEP 11: Final column order
 # =============================================================================
 print("\n[Step 11] Finalizing dataset...")
 
-df = df[[
+final_cols = [
     'date', 'year', 'month', 'month_name', 'day', 'day_of_week',
     'country', 'region', 'state', 'city',
     'latitude', 'longitude',
@@ -178,7 +176,7 @@ df = df[[
     'killed', 'wounded', 'casualties', 'log_casualties',
     'success', 'suicide',
     'summary'
-]]
+]
 
 df = df[final_cols].reset_index(drop=True)
 
@@ -188,7 +186,7 @@ df = df[final_cols].reset_index(drop=True)
 df.to_csv(OUTPUT_PATH, index=False)
 
 # =============================================================================
-# FINAL SUMMARY 
+# FINAL SUMMARY
 # =============================================================================
 print("\n" + "=" * 60)
 print("  PREPROCESSING COMPLETE")
@@ -207,7 +205,3 @@ print(f"    Max casualties : {int(df['casualties'].max()):,}")
 
 print(f"\n  Missing values   : {df.isnull().sum().sum()}")
 print("=" * 60)
-
-
-
-
